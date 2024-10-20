@@ -1,10 +1,11 @@
-package com.compose.journal.app.controller;
+package com.compose.journal.app.controller.journal;
 
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
-import com.compose.journal.app.entities.Journal;
-import com.compose.journal.app.services.JournalServices;
+
+import com.compose.journal.app.entities.journal.Journal;
+import com.compose.journal.app.services.journal.JournalServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class JournalController {
     @Autowired(required = true)
     private JournalServices journalServices;
 
+
     /**
      * To get all journals from database
      * 
@@ -40,7 +42,7 @@ public class JournalController {
      * @param id
      * @return ResponseEntity<?>
      */
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<?> getJournalById(@PathVariable String id) {
 
         Optional<Journal> journal = journalServices.getJournalById(id);
@@ -87,6 +89,29 @@ public class JournalController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * To get all journals from database by username
+     * 
+     * @param username
+     * @return ResponseEntity<?>
+     */
+    @GetMapping("/user/{username}")
+    public ResponseEntity<?> getAllJournalByUser(@PathVariable String username) {
+        return new ResponseEntity<>(journalServices.getAllJournalByUser(username), HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{username}")
+    public ResponseEntity<?> postMethodName(@RequestBody Journal entity, @PathVariable String username) {
+
+        try {
+            
+            return new ResponseEntity<>(journalServices.postMethodName(username, entity), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     /**

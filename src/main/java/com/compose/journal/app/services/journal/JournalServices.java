@@ -1,4 +1,4 @@
-package com.compose.journal.app.services;
+package com.compose.journal.app.services.journal;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,14 +6,19 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.compose.journal.app.entities.Journal;
-import com.compose.journal.app.repositories.JournalRepository;
+import com.compose.journal.app.entities.journal.Journal;
+import com.compose.journal.app.repositories.journal.JournalRepository;
+import com.compose.journal.app.repositories.user.UserRepository;
 
 @Component
 public class JournalServices {
 
     @Autowired(required = true)
     private JournalRepository journalRepository;
+
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * 
@@ -82,6 +87,44 @@ public class JournalServices {
         journal.setId(id);
         journalRepository.save(journal);
         return true;
+    }
+
+
+    /**
+     * To get all journals from database by username
+     * 
+     * @param username
+     * @return List<Journal>
+     */
+    public List<Journal> getAllJournalByUser(String username) {
+        try{
+
+            return userRepository.findByUsername(username).getJournals();
+        }catch (Exception e){
+           new Throwable(e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * To add journal in database by username
+     * 
+     * @param username
+     * @param journal
+     * @return String
+     */
+    public String postMethodName(String username, Journal journal) {
+        try{
+            var user = userRepository.findByUsername(username);
+            user.getJournals().add(journal);
+            userRepository.save(user);
+            journalRepository.save(journal);
+            return "Entry id " + journal.getId() + " was added to ";
+        }catch (Exception e){
+           new Throwable(e.getMessage());
+            return null;
+        }
     }
 
 }
